@@ -1,0 +1,27 @@
+{
+  "name": "ApplauseTesterMatching",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rachitpuri/ApplauseTesterMatching.git"
+  },
+  "author": "rachit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rachitpuri/ApplauseTesterMatching/issues"
+  },
+  "homepage": "https://github.com/rachitpuri/ApplauseTesterMatching",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "fast-csv": "^2.0.0",
+    "fs": "0.0.2",
+    "sequelize": "^3.23.3"
+  }
+}

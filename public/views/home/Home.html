@@ -1,0 +1,59 @@
+﻿<div class="container">
+
+    <div class="row">
+        <h1 class="title">Tester Matching</h1>
+    </div>
+    <div class="row search-bar">
+        <div>
+            <div class="col-lg-4 col-md-4 col-sm-4">
+                <select id="countries" multiple="multiple">
+                    <option value="1">US</option>
+                    <option value="2">GB</option>
+                    <option value="3">JP</option>
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4">
+                <select id="devices" multiple="multiple">
+                    <option value="1">iPhone 4</option>
+                    <option value="2">iPhone 4S</option>
+                    <option value="3">iPhone 5</option>
+                    <option value="4">Galaxy S3</option>
+                    <option value="5">Galaxy S4</option>
+                    <option value="6">Nexus 4</option>
+                    <option value="7">Droid Razor</option>
+                    <option value="8">Droid DNA</option>
+                    <option value="9">HTC One</option>
+                    <option value="10">iPhone 3</option>
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4">
+                <input type="button" class="btn btn-primary" ng-click="search()" value="Search" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row error-msg" ng-show="errormsg">
+        <p>Please select countries, devices from dropdown and then press search</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-borderd" ng-show="validSearch">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tester Name</th>
+                    <th>Device</th>
+                    <th>Total Bugs Found</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="tester in testers">
+                    <td>{{$index + 1}}</td>
+                    <td>{{tester.firstName}}</td>
+                    <td>{{tester.description}}</td>
+                    <td>{{tester.bugs}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

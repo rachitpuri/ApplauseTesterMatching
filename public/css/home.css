@@ -1,0 +1,25 @@
+﻿.search-bar {
+    margin-top:20px; 
+    text-align:center
+}
+
+.search-bar > div {
+    display:inline-block; 
+    width:50%
+}
+
+.table {
+    margin-top:20px; 
+    width:70%; 
+    margin-left:auto; 
+    margin-right:auto
+}
+
+.table *, .title, .error-msg {
+    text-align: center
+}
+
+.error-msg > p {
+    color: red;
+    font-size: 13px;
+}
