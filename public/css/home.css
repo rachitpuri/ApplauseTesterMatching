@@ -3,6 +3,11 @@
     text-align:center
 }
 
+#country, #device, #search {
+	margin-top:10px;
+	margin-bottom:10px;
+}
+
 .search-bar > div {
     display:inline-block; 
     width:50%

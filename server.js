@@ -306,7 +306,7 @@ var port = process.env.port || 4000
 
 var server = app.listen(port, function () {
     var host = server.address().address || '127.0.0.1';
-    var port = server.address().port;
+    var port = server.address().port  || 4000;
 
     console.log('Example app listening at http://%s:%s', host, port);
 });
