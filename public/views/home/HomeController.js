@@ -1,6 +1,6 @@
 ﻿"use strict"
 
-app.controller("HomeController", function ($scope, $rootScope, $http, $routeParams, $log) {
+app.controller("HomeController", function ($scope, $http, $routeParams, $log) {
     $(function () {
         $('#countries').multiselect({
             includeSelectAllOption: true
@@ -13,6 +13,10 @@ app.controller("HomeController", function ($scope, $rootScope, $http, $routePara
     $scope.validSearch = false;
     $scope.errormsg = false;
 
+    /*
+    * Displays Testers associated with particular device along with the bugs found for that device
+    * in a sorted order. 
+    */
     $scope.search = function() {
         var country = $("#countries option:selected");
         var list_country = [];
@@ -45,5 +49,4 @@ app.controller("HomeController", function ($scope, $rootScope, $http, $routePara
             $scope.errormsg = true;
         }
     }
-
 });

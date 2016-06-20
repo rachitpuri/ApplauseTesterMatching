@@ -1,7 +1,8 @@
 {
   "name": "ApplauseTesterMatching",
   "version": "1.0.0",
-  "description": "",
+  "description": "applause tester matching app",
+  "readme": "README.md",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -9,30 +9,28 @@ var parse = require('fast-csv');
 var app = express();
 app.use(express.static(__dirname + '/'));
 
-var PRODUCTION_DB = 'applause2'
-var TEST_DB = 'testapplause'
-
 var MODE_TEST = 'mode_test'
 var MODE_PRODUCTION = 'mode_production'
+
+var HOST = process.env.OPENSHIFT_MYSQL_DB_HOST || 'localhost';
+var PORT = process.env.OPENSHIFT_MYSQL_DB_PORT || 3306;
+var USER = process.env.OPENSHIFT_MYSQL_DB_USERNAME;
+var PASSWORD = process.env.OPENSHIFT_MYSQL_DB_PASSWORD
+var PRODUCTION_DB = 'applause';
+var TEST_DB = 'applauselocal'
 
 var state = {
     pool: null,
     mode: null,
 }
 
-// connection
-//connect(MODE_PRODUCTION);
-
-var sequelize = new Sequelize(PRODUCTION_DB, 'root', 'siso@123', {
-    host: '127.0.0.1',
+var sequelize = new Sequelize(PRODUCTION_DB, USER, PASSWORD, {
+    host: HOST,
+    port: PORT,
     dialect: 'mysql',
     pool: false
-    //pool: {
-    //    max: 5,
-    //    min: 0,
-    //    idle: 10
-    //},
 });
+
 state.mode = MODE_PRODUCTION;
 state.pool = sequelize;
 
@@ -47,7 +45,7 @@ sequelize
         console.log('Unable to connect to the database:', err);
     });
 
-// -------------------------------- Create Tables ---------------------------- //
+// -------------------------------- Create Tables --------------------------------- //
 
 // Tester Table
 var Tester = sequelize.define('testers', {
@@ -132,7 +130,7 @@ var TesterDevice = sequelize.define('tester_devices', {
     timestamps: false
 });
 
-// ------------------------------------- Pushing data into tables -------------------------------------------- //
+// --------------------------------Read CSV files and fill database ---------------------------------- //
 
 Tester.sync({ force: true }).then(function () {
     fillTesterData("data/testers.csv", function () {
@@ -146,65 +144,55 @@ Tester.sync({ force: true }).then(function () {
                         });
                     })
                 });
-
             })
         });
     })
 });
 
-
+// fill Testers Table
 function fillTesterData(filename, callback) {
-    // fill Testers database
     var tester_data = []
     parseCSV(filename, tester_data, function () {
         Tester.bulkCreate(tester_data).then(function () {
             callback();
-            //return Tester.findAll();
         }).then(function (testers) {
             callback();
-            //console.log(testers)
         });
     });
 }
 
+// fill Devices Table
 function fillDeviceData(filename, callback) {
-    // fill Testers database
     var device_data = []
     parseCSV(filename, device_data, function () {
         Device.bulkCreate(device_data).then(function () {
             callback();
-            //return Device.findAll();
         }).then(function (devices) {
             callback();
-            //console.log(devices)
         });
     });
 }
 
+// fill Bug Table
 function fillBugData(filename, callback) {
-    // fill Testers database
     var bug_data = []
     parseCSV(filename, bug_data, function () {
         Bug.bulkCreate(bug_data).then(function () {
             callback();
-            //return Bug.findAll();
         }).then(function (bugs) {
             callback();
-            //console.log(bugs)
         });
     });
 }
 
+// fill TestersDevice Table
 function fillTesterDeviceData(filename, callback) {
-    // fill Testers database
     var tester_device_data = []
     parseCSV(filename, tester_device_data, function () {
         TesterDevice.bulkCreate(tester_device_data).then(function () {
             callback();
-            //return TesterDevice.findAll();
         }).then(function (testersDevices) {
             callback();
-            //console.log(testersDevices)
         });
     });
 }
@@ -253,12 +241,14 @@ function parseCSV(path, arr, callback) {
              .on("end", function () {
                  callback()
              });
-    }
+        }
 }
-
 
 // --------------------------------- Fetch Data --------------------------------------- //
 
+/*
+* GET Testers along with bugs found
+*/
 app.get("/api/getTesters/:countries/:devices", function (req, res) {
     var param1 = req.params.countries;
     var param2 = req.params.devices;
@@ -302,18 +292,9 @@ app.get("/api/getTesters/:countries/:devices", function (req, res) {
 
 // -------------------------------- start server --------------------------------------- //
 
-var port = process.env.port || 4000
+var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+var port = process.env.OPENSHIFT_NODEJS_PORT || 4000;
 
-var server = app.listen(port, function () {
-    var host = server.address().address || '127.0.0.1';
-    var port = server.address().port  || 4000;
-
-    console.log('Example app listening at http://%s:%s', host, port);
-});
-
-//var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-//var port = process.env.port || 4000;
-
-//app.listen(port, ip);
+app.listen(port, ip);
 
 // ------------------------------------------------------------------------------------- //
