@@ -49,4 +49,38 @@ app.controller("HomeController", function ($scope, $http, $routeParams, $log) {
             $scope.errormsg = true;
         }
     }
-});
+
+    $scope.selIdx = -1;
+
+    $scope.isSelected = function (user) {
+        return $scope.selectedUser === user;
+    }
+
+    /*
+    * Get the complete list of devices along with bugs found for a selected Tester
+    */
+    $scope.getTesterDetail = function (user, index) {
+        if ($scope.selectedUser === user) {
+            $scope.selectedUser = false;
+        } else {
+            $scope.selectedUser = user;
+        }
+        $scope.selIdx = index;
+        var tester = user.firstName;
+        
+        var device = $("#devices option:selected");
+        var list_device = [];
+        device.each(function () {
+            list_device.push($(this).text())
+        });
+        var devices = "device=" + list_device;
+
+        $http.get("api/device/contribution/" + tester +"/" +devices)
+            .success(function (response) {
+                console.log(response)
+                $scope.items = response;
+            }).error(function (error) {
+                console.log(error)
+            })
+    }
+})

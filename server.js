@@ -14,10 +14,10 @@ var MODE_PRODUCTION = 'mode_production'
 
 var HOST = process.env.OPENSHIFT_MYSQL_DB_HOST || 'localhost';
 var PORT = process.env.OPENSHIFT_MYSQL_DB_PORT || 3306;
-var USER = process.env.OPENSHIFT_MYSQL_DB_USERNAME;
-var PASSWORD = process.env.OPENSHIFT_MYSQL_DB_PASSWORD
+var USER = process.env.OPENSHIFT_MYSQL_DB_USERNAME || 'root';
+var PASSWORD = process.env.OPENSHIFT_MYSQL_DB_PASSWORD || 'siso@123';
 var PRODUCTION_DB = 'applause';
-var TEST_DB = 'applauselocal'
+var TEST_DB = 'applause2'
 
 var state = {
     pool: null,
@@ -247,7 +247,7 @@ function parseCSV(path, arr, callback) {
 // --------------------------------- Fetch Data --------------------------------------- //
 
 /*
-* GET Testers along with bugs found
+* GET sorted list of Testers based on number of bugs found
 */
 app.get("/api/getTesters/:countries/:devices", function (req, res) {
     var param1 = req.params.countries;
@@ -263,29 +263,65 @@ app.get("/api/getTesters/:countries/:devices", function (req, res) {
         q_device.push(String(devices[i]));
     }
 
-    var q = 'select fin.firstName, d.description, fin.bugs \
-            from ( \
-	            select t.firstName, temp.deviceId, temp.bugs \
-	            from testers t \
-	            right join ( \
+    var q = 'select t.firstName, temp.count, temp.bugs \
+	         from testers t \
+	         right join ( \
+                select tp.bugId, count(*) as count, tp.testerId, SUM(tp.bugs) as bugs \
+                from ( \
 		            select b.*, count(*) as bugs \
-            from bugs b \
-            where b.testerId in ( \
-                select t.testerId \
+                    from bugs b \
+                    where b.testerId in ( \
+                        select t.testerId \
 			            from testers t \
 			            where t.country in (:country) \
-		            ) and b.deviceId in ( \
-			            select d.deviceId \
-			            from devices d \
-			            where d.description in (:device)  \
-		            ) \
-		            group by b.testerId, b.deviceId \
-		            order by bugs desc \
-	            ) temp on temp.testerId = t.testerId \
-            ) fin, devices d \
-            where fin.deviceId = d.deviceId';
+		                ) and b.deviceId in ( \
+			                select d.deviceId \
+			                from devices d \
+			                where d.description in (:device)  \
+		                ) \
+		                group by b.testerId, b.deviceId \
+		                order by bugs desc \
+	                    ) tp \
+                        group by tp.testerId \
+                        order by bugs desc \
+                    ) temp on temp.testerId = t.testerId'
 
     sequelize.query(q, { replacements: {country: q_country, device: q_device}, type: sequelize.QueryTypes.SELECT }).then(function (testers) {
+        res.json(testers);
+    })
+});
+
+/*
+* GET list of devices tester worked on along with bugs found in each device
+*/
+app.get("/api/device/contribution/:tester/:devices", function (req, res) {
+    var param1 = req.params.tester;
+    var param2 = req.params.devices;
+    var devices = param2.split('=')[1].split(',');
+    var q_device = [];
+    for (var i = 0; i < devices.length; i++) {
+        q_device.push(String(devices[i]));
+    }
+
+    var q = 'select d.description, fin.bugs \
+            from ( \
+                select b.*, count(*) as bugs \
+                from bugs b \
+                where b.testerId in ( \
+                    select t.testerId \
+                    from testers t \
+                    where t.firstName = :name \
+                    ) and b.deviceId in ( \
+                        select d.deviceId \
+                        from devices d \
+                        where d.description in (:device) \
+                    ) \
+                    group by b.deviceId \
+                    order by bugs desc \
+                ) fin, devices d \
+            where fin.deviceId = d.deviceId'
+
+    sequelize.query(q, { replacements: { name: param1, device: q_device }, type: sequelize.QueryTypes.SELECT }).then(function (testers) {
         res.json(testers);
     })
 });

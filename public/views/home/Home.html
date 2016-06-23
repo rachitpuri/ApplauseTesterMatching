@@ -1,4 +1,5 @@
-﻿<div class="container">
+﻿
+<div class="container">
 
     <div class="row">
         <h1 class="title">Tester Matching</h1>
@@ -42,16 +43,22 @@
                 <tr>
                     <th>#</th>
                     <th>Tester Name</th>
-                    <th>Device</th>
+                    <th>Devices Worked</th>
                     <th>Total Bugs Found</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr ng-repeat="tester in testers">
+            <tbody class="table-body" ng-repeat="tester in testers" ng-switch on="isSelected(tester)" ng-click="getTesterDetail(tester,$index)">
+                <tr ng-class="{sel:selIdx==$index}">
                     <td>{{$index + 1}}</td>
                     <td>{{tester.firstName}}</td>
-                    <td>{{tester.description}}</td>
+                    <td>{{tester.count}}</td>
                     <td>{{tester.bugs}}</td>
+                </tr>
+                <tr ng-switch-when="true" ng-repeat="item in items">
+                    <td>{{item.prop || " "}}</td>
+                    <td>{{item.prob || " "}}</td>
+                    <td>{{item.description}}</td>
+                    <td>{{item.bugs}}</td>
                 </tr>
             </tbody>
         </table>
