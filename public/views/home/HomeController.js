@@ -40,7 +40,7 @@ app.controller("HomeController", function ($scope, $http, $routeParams, $log) {
             $http.get("api/getTesters/" + countries + "/" + devices)
             .success(function (response) {
                 console.log(response)
-                $scope.testers = response;
+                $scope.testers = response.result;
             }).error(function (error) {
                 console.log(error)
             })
@@ -74,11 +74,10 @@ app.controller("HomeController", function ($scope, $http, $routeParams, $log) {
             list_device.push($(this).text())
         });
         var devices = "device=" + list_device;
-
         $http.get("api/device/contribution/" + tester +"/" +devices)
             .success(function (response) {
                 console.log(response)
-                $scope.items = response;
+                $scope.items = response.result;
             }).error(function (error) {
                 console.log(error)
             })

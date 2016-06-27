@@ -1,4 +1,10 @@
-﻿.search-bar {
+﻿table, td  {
+  border: 1px solid grey;
+  border-collapse: collapse;
+  padding: 5px;
+}
+
+.search-bar {
     margin-top:20px; 
     text-align:center
 }
